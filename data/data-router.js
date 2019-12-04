@@ -1,4 +1,5 @@
 const express = require("express");
+
 //make sure to invoke it an use uppercase R for .Router()
 const router = express.Router();
 
@@ -21,7 +22,8 @@ router.get("/", (req, res) => {
 });
 router.get("/:id", (req, res) => {
   const id = req.params.id;
-  findById(id)
+  data
+    .findById(id)
     .then(singlePost => {
       if (singlePost) {
         res.status(200).json(singlePost);
@@ -40,9 +42,10 @@ router.get("/:id", (req, res) => {
 });
 router.get("/:id/comments", (req, res) => {
   const id = req.params.id;
-  findPostComments(id)
+  data
+    .findPostComments(id)
     .then(comments => {
-      if (comments) {
+      if (comments && comments[0].post_id) {
         res.status(200).json(comments);
       } else {
         res.status(404).json({
@@ -128,13 +131,11 @@ router.delete("/", (req, res) => {
     });
 });
 
-router.put("/", (req, res) => {
+router.put("/:id", (req, res) => {
   if (!req.body.title || !req.body.contents) {
-    res
-      .status(400)
-      .json({
-        errorMessage: "Please provide title and contents for the post."
-      });
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    });
   }
   const id = req.params.id;
   data
@@ -145,11 +146,9 @@ router.put("/", (req, res) => {
           res.status(200).json({ data: allPosts, updated: updatedPost });
         });
       } else {
-        res
-          .status(404)
-          .json({
-            errorMessage: "The post with the specified ID does not exist."
-          });
+        res.status(404).json({
+          errorMessage: "The post with the specified ID does not exist."
+        });
       }
     })
     .catch(error => {
