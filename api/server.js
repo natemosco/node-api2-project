@@ -6,6 +6,6 @@ const server = express();
 
 server.use(express.json()); // This is a place for middleware?
 
-server.use("/api/posts/");
+server.use("/api/posts/", dataRouter);
 
 module.exports = server;
